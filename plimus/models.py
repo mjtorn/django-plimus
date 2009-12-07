@@ -21,12 +21,12 @@ class GenericNotificationManager(models.Manager):
         'transactionDate': lambda x: datetime.strptime(x, '%m/%d/%Y %H:%M %p'),
         'untilDate': lambda x: datetime.strptime(x, '%m/%d/%Y %H:%M %p'),
 
-        'productID': int,
-        'contractID': int,
-        'oldProductID': int,
-        'oldContractID': int,
-        'newProductID': int,
-        'newContractID': int,
+        'productId': int,
+        'contractId': int,
+        'oldProductId': int,
+        'oldContractId': int,
+        'newProductId': int,
+        'newContractId': int,
 
         'contractPrice': lambda x: Decimal(x.replace(',', '')),
         'quantity': int,
@@ -38,13 +38,13 @@ class GenericNotificationManager(models.Manager):
 
         'promoteContractsNum': int,
 
-        'promoteContractID': int,
+        'promoteContractId': int,
         'promoteContractPrice': lambda x: Decimal(x.replace(',', '')),
 
         'promoteContractQuantity': int,
 
-        'accountID': int,
-        'userID': int,
+        'accountId': int,
+        'userId': int,
     }
 
     def ipn_as_dict(self, refnum):
@@ -60,8 +60,8 @@ class GenericNotificationManager(models.Manager):
             try:
                 value = self.typedict[key](value)
             except KeyError:
-                if key.startswith('contractID'):
-                    value = self.typedict['contractID'](value)
+                if key.startswith('contractId'):
+                    value = self.typedict['contractId'](value)
                 elif key.startswith('contractPrice'):
                     value = self.typedict['contractPrice'](value)
                 elif key.startswith('contractQuantity'):
