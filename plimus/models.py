@@ -19,7 +19,7 @@ class GenericNotificationManager(models.Manager):
         'originalReferenceNumber': int,
 
         'transactionDate': lambda x: datetime.strptime(x, '%m/%d/%Y %H:%M %p'),
-        'untilDate': lambda x: datetime.strptime(x, '%m/%d/%Y %H:%M %p'),
+        'untilDate': lambda x: datetime.strptime(x, '%m/%d/%Y %H:%M %p') if x else None,
 
         'productId': int,
         'contractId': int,
