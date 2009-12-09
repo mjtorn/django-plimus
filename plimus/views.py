@@ -13,7 +13,7 @@ def plimus_ipn(request):
 
     attrs = ipn_form.save()
 
-    getattr(plimus_signals, data['transactionType'].lower()).send(sender=ipn_form, refnum=data['referenceNumber'], data=plimus_models.PlimusVendorIPNAttr.objects.ipn_as_dict(data['referenceNumber']))
+    getattr(plimus_signals, data['transactionType'].lower()).send(sender=ipn_form, refnum=data['referenceNumber'], data=plimus_models.PlimusVendorIPNAttr.objects.ipn_dicts(data['referenceNumber'])[-1])
 
     return HttpResponse('OK!', content_type='text/plain')
 
