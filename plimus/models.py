@@ -47,29 +47,46 @@ class GenericNotificationManager(models.Manager):
         'userId': int,
     }
 
-    def ipn_as_dict(self, refnum):
+    def ipn_dicts(self, refnum):
         """Return data of IPN identified by refnum as dictionary
         """
 
-        qs = self.filter(reference_number=refnum)
+        from itertools import groupby
 
+        qs = self.filter(reference_number=refnum).order_by('tstamp')
+
+        if not qs:
+            raise ValueError('Nothing found for reference number %s' % refnum)
+
+        g = groupby(qs, lambda x: x.tstamp)
         ipn_dict = {}
-        for ipn_row in qs:
-            key, value = ipn_row.key, ipn_row.value
-
+        ipn_dicts = []
+        while True:
             try:
-                value = self.typedict[key](value)
-            except KeyError:
-                if key.startswith('contractId'):
-                    value = self.typedict['contractId'](value)
-                elif key.startswith('contractPrice'):
-                    value = self.typedict['contractPrice'](value)
-                elif key.startswith('contractQuantity'):
-                    value = self.typedict['contractQuantity'](value)
+                tstamp, refnum_group = g.next()
+                refnum_group = list(refnum_group)
 
-            ipn_dict[key] = value
+                for ipn_row in refnum_group:
+                    key, value = ipn_row.key, ipn_row.value
 
-        return ipn_dict
+                    try:
+                        value = self.typedict[key](value)
+                    except KeyError:
+                        if key.startswith('contractId'):
+                            value = self.typedict['contractId'](value)
+                        elif key.startswith('contractPrice'):
+                            value = self.typedict['contractPrice'](value)
+                        elif key.startswith('contractQuantity'):
+                            value = self.typedict['contractQuantity'](value)
+
+                    ipn_dict[key] = value
+
+                ipn_dicts.append(ipn_dict)
+
+            except StopIteration:
+                break
+
+        return ipn_dicts
 
 
 class PlimusVendorIPNAttr(models.Model):
