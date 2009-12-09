@@ -76,6 +76,10 @@ class PlimusVendorIPNAttr(models.Model):
     """Denormalized Key/Value Pair table
     """
 
+    ## Use this for grouping as refnum is not unique
+    ## over transaction types
+    tstamp = models.DateTimeField()
+
     reference_number = models.IntegerField(db_index=True)
 
     ## The spec has some dynamic keys, so can't limit length
@@ -90,6 +94,10 @@ class PlimusVendorIPNAttr(models.Model):
 class PlimusAffiliateIPN(models.Model):
     """Denormalized Key/Value Pair table
     """
+
+    ## Use this for grouping as refnum is not unique
+    ## over transaction types
+    tstamp = models.DateTimeField()
 
     reference_number = models.IntegerField(db_index=True)
 
