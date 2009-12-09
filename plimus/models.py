@@ -61,30 +61,25 @@ class GenericNotificationManager(models.Manager):
         g = groupby(qs, lambda x: x.tstamp)
         ipn_dict = {}
         ipn_dicts = []
-        while True:
-            try:
-                tstamp, refnum_group = g.next()
-                refnum_group = list(refnum_group)
+        for tstamp, refnum_group in g:
+            refnum_group = list(refnum_group)
 
-                for ipn_row in refnum_group:
-                    key, value = ipn_row.key, ipn_row.value
+            for ipn_row in refnum_group:
+                key, value = ipn_row.key, ipn_row.value
 
-                    try:
-                        value = self.typedict[key](value)
-                    except KeyError:
-                        if key.startswith('contractId'):
-                            value = self.typedict['contractId'](value)
-                        elif key.startswith('contractPrice'):
-                            value = self.typedict['contractPrice'](value)
-                        elif key.startswith('contractQuantity'):
-                            value = self.typedict['contractQuantity'](value)
+                try:
+                    value = self.typedict[key](value)
+                except KeyError:
+                    if key.startswith('contractId'):
+                        value = self.typedict['contractId'](value)
+                    elif key.startswith('contractPrice'):
+                        value = self.typedict['contractPrice'](value)
+                    elif key.startswith('contractQuantity'):
+                        value = self.typedict['contractQuantity'](value)
 
-                    ipn_dict[key] = value
+                ipn_dict[key] = value
 
-                ipn_dicts.append(ipn_dict)
-
-            except StopIteration:
-                break
+            ipn_dicts.append(ipn_dict)
 
         return ipn_dicts
 
